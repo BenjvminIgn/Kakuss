@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Kakus - Inicio</title>
+
+    <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/sf-pro-display">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <link rel="stylesheet" href="index.css">
+    <script src="global.js"></script>
+</head>
+<body>
+    <!-- Header correctamente posicionado en la parte superior -->
+    <header class="main-header py-3">
+        <div class="container d-flex justify-content-between align-items-center">
+            <h1 class="text-dark fs-1 fw-bold mb-0">Inicio</h1>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="container">
+        <!-- Título más bajo con espaciado adecuado -->
+        <section class="hero-section">
+            <h2 class="hero-title">Bienvenido a kakus</h2>
+        </section>
+
+        <!-- Cards en comparación (una al lado de la otra) -->
+        <section class="cards-wrapper">
+            <div class="row g-2 g-md-4 justify-content-center">
+                <!-- Card Usuario 1 -->
+                <div id="card-1" class="col-6">
+                    <div class="card responsive-card">
+                        <h1 class="card-title text-center">Usuario</h1>
+                        <div class="card-body">
+                            <h1 id="contador-user1" class="count-title text-center">0</h1>
+                            <p class="card-text">visitas hoy</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Usuario 2 -->
+                <div id="card-2" class="col-6">
+                    <div class="card responsive-card">
+                        <h1 class="card-title text-center">Usuario 2</h1>
+                        <div class="card-body">
+                            <h1 id="contador-user2" class="count-title text-center">0</h1>
+                            <p class="card-text">visitas hoy</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bar-progress">
+            <!-- Tarjeta del Total Conjunto y Barra de Batalla -->
+            <div class="card shadow-sm border-0 p-3 mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-bold text-dark">Total conjunto</span>
+                    <!-- Aquí se mostrará el número total dinámico -->
+                    <span id="total-general" class="fw-bold fs-4" style="color: #a3321d;">0</span>
+                </div>
+
+                <!-- Barra de progreso compartida (Bootstrap) -->
+                <div class="progress" style="height: 10px">
+                    <!-- Barra de Alex con ancho inicial de prueba -->
+                    <div id="bar-1" class="progress-bar" role="progressbar" style="width: 50%;" aria-valuemin="0" aria-valuemax="100"></div>
+                    <!-- Barra de Sam con ancho inicial de prueba -->
+                    <div id="bar-2" class="progress-bar" role="progressbar" style="width: 50%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+
+                <!-- Leyenda inferior -->
+                <div class="d-flex justify-content-between align-items-center mt-2 small text-muted">
+                    <span><span class="dot" style="color: #ec3636;">●</span> user 1</span>
+                    <span>user 2 <span class="dot" style="color: #179ace;">●</span></span>
+                </div>
+            </div>
+        </section>
+
+        <section class="mt-3">
+            <div class="card shadow-sm border-0 p-3 text-center bg-white rounded-4">
+                <h6 class="fw-bold text-dark mb-2">Dato Curioso 💡</h6>
+                <p id="joke-text" class="small text-muted mb-3">Cargando sabiduría...</p>
+                <button onclick="obtenerDato()" class="btn btn-sm btn-dark rounded-pill py-1 px-3 mx-auto" style="width: fit-content;">Otro dato</button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Barra de navegación inferior -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active">
+            <span class="nav-icon"><i class="bi bi-house-door"></i></span>
+            <span class="nav-label">Inicio</span>
+        </a>
+        <a href="stats.html" class="nav-item">
+            <span class="nav-icon"><i class="bi bi-bar-chart"></i></span>
+            <span class="nav-label">Estadística</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+            <span class="nav-icon"><i class="bi bi-gear"></i></span>
+            <span class="nav-label">Ajuste</span>
+        </a>
+    </nav>
+
+    <script src="index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx6Hk+gWpGz5sE5Z1mUpmsaSmqM6pmsV3y4pGekfvXvWz8i1c+z" crossorigin="anonymous"></script>
+</body>
+</html>

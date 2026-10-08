@@ -1,0 +1,116 @@
+
+:root {
+  --primary: #ff6b6b;        /* pinkish */
+  --secondary: #6c63ff;      /* soft purple */
+  --bg-light: #f8fafc;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+}
+
+body {
+  font-family: 'Rubik', sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-main);
+  width: 100%;
+}
+
+/* ==== Botón ==== */
+.btn-login {
+  background: linear-gradient(to bottom, var(--primary), #ff9a52);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 12px 24px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  margin-top: 1.5rem;
+  width: 100%; /* mismo ancho que el input */
+}
+
+.btn-login:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+}
+
+/* ==== Texto y párrafo ==== */
+.parrafo {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* ==== Input ==== */
+.form-control {
+  width: 100%;
+  margin-top: 0.75rem;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--primary);
+  transition: border-color 0.3s, box-shadow 0.3s;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+.form-control:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(255,107,107,0.2);
+  outline: none;
+}
+
+/* ==== Card – vibrante ==== */
+.card {
+  width: 100%;
+  max-width: 100%;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* estira hijos al ancho completo */
+  padding: 2rem;
+}
+
+/* ==== Footer responsivo ==== */
+footer {
+  background-color: transparent; /* O el color que prefieras */
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+footer .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+/* Bootstrap utilities handle responsive layout */
+
+footer p {
+  margin: 0.3rem 0;
+}
+
+/* Utility */
+.text-muted {
+  color: var(--text-muted) !important;
+}
+
+/* ==== Ola decorativa ==== */
+.wave-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  line-height: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.wave {
+  width: 100%;
+  height: 240px;
+  display: block;
+}

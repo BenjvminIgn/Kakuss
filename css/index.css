@@ -1,0 +1,206 @@
+:root {
+  --font-apple: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --bg-color: #f8fafc;
+  --card-bg: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --header-bg: rgba(255, 255, 255, 0.9);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: var(--font-apple);
+  color: var(--text-main);
+  background-color: var(--bg-color);
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: 90px;
+}
+
+#card-1 .responsive-card{
+  background: linear-gradient(135deg, #f53a3a, #ff772d) !important;
+  color: #f1f5f9;
+  border: none;
+  cursor: pointer;
+}
+
+#card-2 .responsive-card{
+  background: linear-gradient(135deg, #0cefff, #105d9c) !important;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+#card-1 .count-title{
+  font-size: 50px;
+}
+
+#card-2 .count-title{
+  font-size: 50px;
+}
+
+#bar-1 {
+  background-color: #f0573c !important;
+}
+
+#bar-2{
+  background-color: #31afe0 !important;
+}
+
+/* Header con posicionamiento superior fijo/limpio */
+.main-header {
+  width: 100%;
+  background: var(--header-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Título con mayor separación hacia abajo */
+.hero-section {
+  margin-top: 3.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.hero-title {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--text-main);
+}
+
+/* Contenedor y Cards responsivas */
+.cards-wrapper {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding-bottom: 3rem;
+}
+
+.responsive-card {
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+  background-color: var(--card-bg);
+  box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+  height: 100%;
+}
+
+.responsive-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -4px rgba(0, 0, 0, 0.08);
+}
+
+.responsive-card .card-header {
+  background-color: #f1f5f9;
+  border-bottom: 1px solid var(--border-subtle);
+  font-weight: 600;
+  padding: 1rem 1.25rem;
+}
+
+.responsive-card .card-body {
+  padding: 3rem 1.25rem; /* Usar padding vertical es mejor práctica que fijar un height estricto */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Ajustes específicos para móviles */
+@media (max-width: 576px) {
+  .hero-section {
+    margin-top: 2rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .responsive-card {
+    border-radius: 0.75rem;
+  }
+  
+  .responsive-card .card-body {
+    padding: 2rem 0.75rem; /* Ajuste responsivo del padding en móviles */
+  }
+
+  .responsive-card .card-title {
+    font-size: 0.95rem;
+    margin-bottom: 0.4rem;
+  }
+  .responsive-card .card-text {
+    font-size: 0.8rem;
+    line-height: 1.35;
+  }
+}
+
+
+/* En stats el color activo será oscuro para combinar con el diseño de la imagen */
+.nav-item.active {
+  color: #0f172a; 
+}
+
+.nav-item.active .nav-icon {
+  transform: translateY(-2px);
+}
+
+.progress-bar {
+  transition: width 0.6s ease;
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0.5rem 0;
+  z-index: 1000;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: color 0.2s ease, transform 0.2s ease;
+  flex: 1;
+}
+
+.nav-item:hover, .nav-item:active {
+  color: var(--text-main);
+}
+
+.nav-item.active {
+  color: #0f172a; 
+}
+
+.nav-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.2rem;
+  transition: transform 0.2s ease;
+}
+
+.nav-item.active .nav-icon {
+  transform: translateY(-2px);
+}
