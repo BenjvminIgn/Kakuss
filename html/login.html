@@ -20,20 +20,28 @@
         </div>
     </header>
     
-<div class="container pt-5 ">
+<div class="container pt-5">
     <div class="card">
         <div class="card-body">
             <h3 class="card-title text-center fw-bold">¡Bienvenido a Kakus!</h3>
-            <p class="parrafo text-center">¿Quien tira más la cadena?</p>
+            <p class="parrafo text-center">¿Quién tira más la cadena?</p>
 
-            <input 
-                class="form-control" 
-                type="text" 
-                placeholder="Ingresa un nombre"
-                aria-label="default input example"
-            >
+            <!-- Agregamos un ID al formulario para controlarlo -->
+            <form id="login-form">
+                <input 
+                    class="form-control mb-2" 
+                    type="text" 
+                    id="username"
+                    name="username"
+                    required
+                    placeholder="Ingresa un nombre"
+                    aria-label="default input example"
+                >
+                <!-- Mensaje de error oculto por defecto -->
+                <div id="error-message" class="text-danger small mb-3" style="display: none;"></div>
 
-            <button class="btn-login">Entrar</button>
+                <button class="btn-login w-100" type="submit">Entrar</button>
+            </form>
         </div>
     </div>
 </div>
@@ -46,5 +54,6 @@
     </svg>
 </div>
 
+    <script src="../js/login.js"></script>
 </body>
 </html>
