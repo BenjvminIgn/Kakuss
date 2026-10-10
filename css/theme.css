@@ -1,0 +1,60 @@
+/* ===== Botón del header ===== */
+.theme-toggle {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    color: #64748b;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+.theme-toggle:active { transform: scale(0.9); }
+
+/* ===== Efecto cortina ===== */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+::view-transition-old(root) { z-index: 1; }
+::view-transition-new(root) { z-index: 2; }
+
+/* ===== Modo oscuro ===== */
+[data-theme="dark"] {
+    --bg-color: #0b1120;
+    --card-bg: #162032;
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border-subtle: rgba(255, 255, 255, 0.1);
+    --header-bg: rgba(15, 23, 42, 0.9);
+}
+
+[data-theme="dark"] .theme-toggle {
+    background: #1e293b;
+    color: #fbbf24;
+}
+
+/* Clases de Bootstrap que no se adaptan solas */
+[data-theme="dark"] .text-dark  { color: var(--text-main) !important; }
+[data-theme="dark"] .bg-white,
+[data-theme="dark"] .bg-light   { background-color: var(--card-bg) !important; }
+[data-theme="dark"] .card       { background-color: var(--card-bg); }
+
+/* Navegación inferior */
+[data-theme="dark"] .bottom-nav {
+    background: rgba(15, 23, 42, 0.95);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.4);
+}
+[data-theme="dark"] .nav-item.active { color: #f1f5f9; }
+
+/* Estilos inline de stats.html */
+[data-theme="dark"] [style*="background-color: #ffffff"] { background-color: var(--card-bg) !important; }
+[data-theme="dark"] [style*="background-color: #f8fafc"] { background-color: #0f172a !important; }
+[data-theme="dark"] [style*="background-color: #f1f5f9"] { background-color: #1e293b !important; }
+[data-theme="dark"] [style*="background-color: #e8f3fc"] { background-color: #12304a !important; }
+[data-theme="dark"] [style*="background-color: #fef2f2"] { background-color: #3b1a1a !important; }

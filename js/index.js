@@ -6,17 +6,15 @@ const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const usuarioActivo = localStorage.getItem('usuarioActivo');
 const headerUsername = document.getElementById('username');
 
+// Si no hay sesión, al login (ajusta el nombre del archivo)
+if (!usuarioActivo) {
+    window.location.replace('login.html');
+}
 
-// Pintamos el nombre en el header superior
 if (headerUsername && usuarioActivo) {
     headerUsername.innerText = usuarioActivo;
 }
 
-const usuarioGuardado = localStorage.getItem('usuarioActivo');
-
-if (usuarioGuardado) {
-    window.location.replace('index.html');
-}
 
 
 // Referencias Tarjeta 1
@@ -179,3 +177,48 @@ async function cargarTablero() {
         console.error('Error cargando visitas del día:', error);
     }
 }
+
+// ===== Datos curiosos aleatorios (API) =====
+async function traducirAEspanol(texto) {
+    try {
+        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(texto)}&langpair=en|es`;
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        return data.responseData.translatedText || texto;
+    } catch {
+        return texto; // si falla la traducción, se muestra en inglés
+    }
+}
+
+async function obtenerDato() {
+    const jokeText = document.getElementById('joke-text');
+    if (!jokeText) return;
+
+    jokeText.innerText = "Buscando sabiduría... 📜";
+
+    try {
+        // 1. Obtenemos el dato curioso (en inglés)
+        const resFact = await fetch('https://uselessfacts.jsph.pl/api/v2/facts/random');
+        const dataFact = await resFact.json();
+        const textoIngles = dataFact.text;
+
+        // 2. Lo traducimos al español al instante usando la API abierta de Google Translate
+        const urlTraductor = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=es&dt=t&q=${encodeURIComponent(textoIngles)}`;
+        const resTrad = await fetch(urlTraductor);
+        const dataTrad = await resTrad.json();
+
+        // Extraemos el texto ya traducido
+        const textoEspanol = dataTrad[0][0][0];
+
+        // 3. Lo mostramos en pantalla
+        jokeText.innerText = textoEspanol;
+
+    } catch (error) {
+        console.error("Error al obtener o traducir el dato:", error);
+        jokeText.innerText = "Ups, nos quedamos sin datos curiosos. 🧻";
+    }
+}
+
+// Ejecutar al cargar la página
+obtenerDato();

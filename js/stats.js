@@ -1,5 +1,5 @@
 const SUPABASE_URL = 'https://vijvrwsphwyczmmwrgvh.supabase.co';
-const SUPABASE_ANON_KEY = 'TU_CLAVE_PUBLICABLE';
+const SUPABASE_ANON_KEY = 'sb_publishable_WmYcNvPImWwB755-wdkJow_nfU0Q2P4';
 
 const _supabase = supabase.createClient(
     SUPABASE_URL,
@@ -71,12 +71,17 @@ function renderMonthData() {
         1
     );
 
+    const nombres = usuarios.slice(0, 2).map(u => u.username);
+
+    // Solo visitas del mes Y de los usuarios actuales
     const visitasMes = visitas.filter(visita => {
         const fecha = new Date(visita.created_at);
-        return fecha >= inicio && fecha < fin;
+        return (
+            fecha >= inicio &&
+            fecha < fin &&
+            nombres.includes(visita.username)
+        );
     });
-
-    const nombres = usuarios.map(u => u.username);
 
     // Conteo mensual por usuario
     const conteos = {};
@@ -105,18 +110,18 @@ function renderMonthData() {
         monthNames[fechaSeleccionada.getMonth()];
 
     // Nombres de los usuarios
-    document.getElementById('label-sam').textContent = usuario1;
-    document.getElementById('label-alex').textContent = usuario2;
+    document.getElementById('user-name-1').textContent = usuario1;
+    document.getElementById('user-name-2').textContent = usuario2;
 
     // Puntuaciones
-    document.getElementById('score-sam').textContent = total1;
-    document.getElementById('score-alex').textContent = total2;
+    document.getElementById('user-score-1').textContent = total1;
+    document.getElementById('user-score-2').textContent = total2;
 
     // Barras de progreso
-    document.getElementById('bar-sam').style.width =
+    document.getElementById('user-bar-1').style.width =
         `${porcentaje1}%`;
 
-    document.getElementById('bar-alex').style.width =
+    document.getElementById('user-bar-2').style.width =
         `${porcentaje2}%`;
 
     // Total y porcentajes
