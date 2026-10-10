@@ -3,14 +3,22 @@ const SUPABASE_URL = 'https://vijvrwsphwyczmmwrgvh.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_WmYcNvPImWwB755-wdkJow_nfU0Q2P4';
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+const MAX_USUARIOS = 2;
+
+// Si ya hay sesión, no pedimos login otra vez
+if (localStorage.getItem('usuarioActivo')) {
+    window.location.replace('index.html');
+}
+
 const form = document.getElementById('login-form');
 const usernameInput = document.getElementById('username');
 const errorMessage = document.getElementById('error-message');
 
-form.addEventListener('submit', async function(event) {
-    event.preventDefault(); 
+form.addEventListener('submit', async function (event) {
+    event.preventDefault();
 
-    const valor = usernameInput.value.trim();
+    // Quita espacios al inicio/final y unifica espacios repetidos
+    const valor = usernameInput.value.trim().replace(/\s+/g, ' ');
     const soloLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
 
     if (valor === "") {
@@ -20,7 +28,6 @@ form.addEventListener('submit', async function(event) {
 
     if (!soloLetras.test(valor)) {
         mostrarError("⚠️ El nombre no puede contener números ni símbolos.");
-        usernameInput.classList.add('is-invalid');
         return;
     }
 
@@ -28,27 +35,43 @@ form.addEventListener('submit', async function(event) {
     usernameInput.classList.remove('is-invalid');
 
     try {
-        // 1. Consultamos correctamente si el usuario ya existe por su nombre
-        const { data, error } = await _supabase
+        // 1. Traemos los usuarios existentes
+        const { data: usuarios, error } = await _supabase
             .from('user')
-            .select('*')
-            .eq('username', valor);
+            .select('username')
+            .order('id', { ascending: true });
 
         if (error) throw error;
 
-        // 2. Si el usuario no está registrado en la base de datos, lo creamos con visit: 0
-        if (data.length === 0) {
+        // 2. Buscamos ignorando mayúsculas/minúsculas
+        const existente = usuarios.find(
+            u => u.username.toLowerCase() === valor.toLowerCase()
+        );
+
+        let nombreFinal;
+
+        if (existente) {
+            // Usamos el nombre exacto guardado en la base de datos
+            nombreFinal = existente.username;
+
+        } else if (usuarios.length < MAX_USUARIOS) {
+            // Hay lugar: se registra como usuario nuevo
             const { error: insertError } = await _supabase
                 .from('user')
                 .insert([{ username: valor, visit: 0 }]);
 
             if (insertError) throw insertError;
+            nombreFinal = valor;
+
+        } else {
+            // Ya están los dos usuarios: no se crean más
+            mostrarError("Ese usuario no existe. Revisa cómo escribiste tu nombre.");
+            return;
         }
 
         // 3. Guardamos sesión y redirigimos
-        localStorage.setItem('usuarioActivo', valor);
-        window.location.href = 'index.html';
-
+        localStorage.setItem('usuarioActivo', nombreFinal);
+        window.location.replace('index.html');
 
     } catch (err) {
         console.error("Error al conectar con Supabase:", err);
