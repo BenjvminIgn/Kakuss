@@ -58,3 +58,29 @@
 [data-theme="dark"] [style*="background-color: #f1f5f9"] { background-color: #1e293b !important; }
 [data-theme="dark"] [style*="background-color: #e8f3fc"] { background-color: #12304a !important; }
 [data-theme="dark"] [style*="background-color: #fef2f2"] { background-color: #3b1a1a !important; }
+
+
+/* Botón flotante (login, sin header) */
+.theme-toggle-floating {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 16px);
+    right: 16px;
+    z-index: 2000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Fondo y textos base del login en oscuro */
+[data-theme="dark"] body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+}
+
+/* Inputs */
+[data-theme="dark"] .form-control {
+    background-color: #1e293b;
+    border-color: rgba(255, 255, 255, 0.15);
+    color: var(--text-main);
+}
+[data-theme="dark"] .form-control::placeholder {
+    color: var(--text-muted);
+}
