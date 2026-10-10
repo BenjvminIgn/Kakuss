@@ -1,97 +1,181 @@
-// Obtener fecha actual en formato YYYY-MM-DD
-function getTodayDate() {
-    return new Date().toISOString().split('T')[0];
+const SUPABASE_URL = 'https://vijvrwsphwyczmmwrgvh.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_WmYcNvPImWwB755-wdkJow_nfU0Q2P4';
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// 1. Recuperamos el nombre del usuario que acaba de entrar
+const usuarioActivo = localStorage.getItem('usuarioActivo');
+const headerUsername = document.getElementById('username');
+
+
+// Pintamos el nombre en el header superior
+if (headerUsername && usuarioActivo) {
+    headerUsername.innerText = usuarioActivo;
 }
 
-// Inicializar contadores y verificar reinicio diario
-let today = getTodayDate();
-let storedDate = localStorage.getItem('kakus_date');
+const usuarioGuardado = localStorage.getItem('usuarioActivo');
 
-if (storedDate !== today) {
-    // Si la fecha guardada es diferente a hoy (o no existe), resetear a 0
-    localStorage.setItem('kakus_countUser1', 0);
-    localStorage.setItem('kakus_countUser2', 0);
-    localStorage.setItem('kakus_date', today);
+if (usuarioGuardado) {
+    window.location.replace('index.html');
 }
 
-let countUser1 = parseInt(localStorage.getItem('kakus_countUser1')) || 0;
-let countUser2 = parseInt(localStorage.getItem('kakus_countUser2')) || 0;
 
-// Actualizar valores iniciales en la vista
-document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById('contador-user1').innerText = countUser1;
-    document.getElementById('contador-user2').innerText = countUser2;
-    actualizaBarra(); // para que muestre el progreso inicial al cargar
-});
-
+// Referencias Tarjeta 1
+const nombre1 = document.getElementById('nombre-user1');
+const contador1 = document.getElementById('contador-user1');
 const card1 = document.getElementById('card-1');
+const bar1 = document.getElementById('bar-1');
+const leyenda1 = document.getElementById('leyenda-user1');
+
+// Referencias Tarjeta 2
+const nombre2 = document.getElementById('nombre-user2');
+const contador2 = document.getElementById('contador-user2');
 const card2 = document.getElementById('card-2');
+const bar2 = document.getElementById('bar-2');
+const leyenda2 = document.getElementById('leyenda-user2');
 
-card1.addEventListener('click', function(){
-    countUser1++;
-    localStorage.setItem('kakus_countUser1', countUser1); // Guarda al hacer click
-    document.getElementById('contador-user1').innerText = countUser1;
-    actualizaBarra();
-}); 
+const totalGeneral = document.getElementById('total-general');
 
-card2.addEventListener('click', function(){
-    countUser2++;
-    localStorage.setItem('kakus_countUser2', countUser2); // Guarda al hacer click
-    document.getElementById('contador-user2').innerText = countUser2;
-    actualizaBarra();
-});
-
-//fin//
+let user1Name = "";
+let user2Name = "";
 
 
-//Actualizar barra//
+async function sumarPunto(username, elementoContador) {
+    if (!username) return;
 
-function actualizaBarra(){
-    let total = countUser1 + countUser2;
-    document.getElementById('total-general').innerText = total;
-    
-    let porcUser1 = 50;
-    let porcUser2 = 50;
+    try {
+        // 1. Registrar la visita en el historial
+        const { error: errorVisita } = await _supabase
+            .from('visits')
+            .insert([{ username: username }]);
 
-    if (total > 0) {
-        porcUser1 = (countUser1 / total) * 100
-        porcUser2 = (countUser2 / total) * 100
+        if (errorVisita) throw errorVisita;
+
+        // 2. Obtener el total acumulado del usuario
+        const { data: usuario, error: errorConsulta } = await _supabase
+            .from('user')
+            .select('visit')
+            .eq('username', username)
+            .single();
+
+        if (errorConsulta) throw errorConsulta;
+
+        // 3. Incrementar el total acumulado
+        const nuevoTotal = (Number(usuario.visit) || 0) + 1;
+
+        const { error: errorActualizacion } = await _supabase
+            .from('user')
+            .update({ visit: nuevoTotal })
+            .eq('username', username);
+
+        if (errorActualizacion) throw errorActualizacion;
+
+        // 4. Actualizar el tablero diario
+        await cargarTablero();
+
+        console.log(
+            `Visita registrada para ${username}. Total acumulado: ${nuevoTotal}`
+        );
+
+    } catch (error) {
+        console.error('Error al registrar la visita:', error);
     }
-    
-    document.getElementById('bar-1').style.width = porcUser1 + '%';
-    document.getElementById('bar-2').style.width = porcUser2 + '%';
 }
 
 
-//API datos curiosos//
+// 4. Lógica visual de la barra de progreso
+function actualizarBarra(v1, v2) {
+    const total = v1 + v2;
+    if (totalGeneral) totalGeneral.innerText = total;
 
-// Función para consumir una API de datos curiosos genuinos y traducirlos
-function obtenerDato() {
-    const jokeElement = document.getElementById('joke-text');
-    jokeElement.innerText = "Buscando un dato interesante...";
+    if (total === 0) {
+        if (bar1) bar1.style.width = '50%';
+        if (bar2) bar2.style.width = '50%';
+    } else {
+        const pct1 = (v1 / total) * 100;
+        const pct2 = (v2 / total) * 100;
+        if (bar1) bar1.style.width = `${pct1}%`;
+        if (bar2) bar2.style.width = `${pct2}%`;
+    }
+}
 
-    // 1. Obtenemos un dato curioso en inglés (ya que las mejores APIs de datos son en inglés)
-    fetch('https://uselessfacts.jsph.pl/api/v2/facts/random?language=en')
-        .then(response => response.json())
-        .then(data => {
-            const englishFact = data.text;
-            
-            // 2. Usamos una API de traducción gratuita (MyMemory) para pasarlo a español
-            return fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(englishFact)}&langpair=en|es`);
-        })
-        .then(response => response.json())
-        .then(translateData => {
-            if (translateData && translateData.responseData && translateData.responseData.translatedText) {
-                jokeElement.innerText = translateData.responseData.translatedText;
-            } else {
-                jokeElement.innerText = "Los delfines duermen con un ojo abierto para estar alertas.";
-            }
-        })
-        .catch(error => {
-            // Plan B por si falla alguna de las APIs
-            jokeElement.innerText = "¿Sabías que los pulpos tienen tres corazones y su sangre es azul?";
+// 5. Asignar clics a las tarjetas
+if (card1) card1.addEventListener('click', () => sumarPunto(user1Name, contador1));
+if (card2) card2.addEventListener('click', () => sumarPunto(user2Name, contador2));
+
+// Iniciar al cargar la página
+cargarTablero();
+
+// Inicio del día actual en la hora local del dispositivo
+function inicioDelDia() {
+    const fecha = new Date();
+    fecha.setHours(0, 0, 0, 0);
+    return fecha;
+}
+
+// Cargar visitas del día actual
+async function cargarTablero() {
+    try {
+        const inicio = inicioDelDia();
+        const fin = new Date(inicio);
+        fin.setDate(fin.getDate() + 1);
+
+        const { data: usuarios, error: errorUsuarios } =
+            await _supabase
+                .from('user')
+                .select('username')
+                .order('id', { ascending: true });
+
+        if (errorUsuarios) throw errorUsuarios;
+
+        const { data: visitas, error: errorVisitas } =
+            await _supabase
+                .from('visits')
+                .select('username, created_at')
+                .gte('created_at', inicio.toISOString())
+                .lt('created_at', fin.toISOString());
+
+        if (errorVisitas) throw errorVisitas;
+
+        const conteo = {};
+
+        usuarios.forEach(usuario => {
+            conteo[usuario.username] = 0;
         });
-}
 
-// Ejecutar automáticamente al cargar la página para que aparezca un dato de entrada
-obtenerDato();
+        visitas.forEach(visita => {
+            conteo[visita.username] =
+                (conteo[visita.username] || 0) + 1;
+        });
+
+        user1Name = usuarios[0]?.username || '';
+        user2Name = usuarios[1]?.username || '';
+
+        const v1 = conteo[user1Name] || 0;
+        const v2 = conteo[user2Name] || 0;
+
+        if (nombre1) {
+            nombre1.textContent =
+                user1Name === usuarioActivo
+                    ? `${user1Name} (Tú)`
+                    : user1Name;
+        }
+
+        if (nombre2) {
+            nombre2.textContent =
+                user2Name === usuarioActivo
+                    ? `${user2Name} (Tú)`
+                    : user2Name;
+        }
+
+        if (contador1) contador1.textContent = v1;
+        if (contador2) contador2.textContent = v2;
+
+        if (leyenda1) leyenda1.textContent = user1Name;
+        if (leyenda2) leyenda2.textContent = user2Name;
+
+        actualizarBarra(v1, v2);
+
+    } catch (error) {
+        console.error('Error cargando visitas del día:', error);
+    }
+}

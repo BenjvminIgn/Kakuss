@@ -1,93 +1,185 @@
-// Generar historial de meses dinámicamente hasta el mes actual
-const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+const SUPABASE_URL = 'https://vijvrwsphwyczmmwrgvh.supabase.co';
+const SUPABASE_ANON_KEY = 'TU_CLAVE_PUBLICABLE';
 
-function generateMockDataUntilNow() {
-    const data = [];
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth();
+const _supabase = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
 
-    // Generar datos desde hace 6 meses hasta el mes actual
-    for (let i = 5; i >= 0; i--) {
-        let d = new Date(currentYear, currentMonth - i, 1);
-        let mName = monthNames[d.getMonth()];
-        let y = d.getFullYear();
-        
-        // Simular datos de visitas para los meses pasados
-        let samVisits = Math.floor(Math.random() * 40) + 110; 
-        let alexVisits = Math.floor(Math.random() * 40) + 110;
-        
-        data.push({
-            month: `${mName} ${y}`,
-            sam: samVisits,
-            alex: alexVisits,
-            recordName: Math.random() > 0.5 ? "Sam" : "Alex",
-            recordVisits: Math.floor(Math.random() * 4) + 8 
-        });
-    }
-    return data;
+const monthNames = [
+    'Enero', 'Febrero', 'Marzo', 'Abril',
+    'Mayo', 'Junio', 'Julio', 'Agosto',
+    'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+];
+
+let usuarios = [];
+let visitas = [];
+let fechaSeleccionada = new Date();
+
+function nombreMes(fecha) {
+    return `${monthNames[fecha.getMonth()]} ${fecha.getFullYear()}`;
 }
 
-const monthlyData = generateMockDataUntilNow();
-let currentIndex = monthlyData.length - 1; // Inicia siempre en el último mes disponible (el mes actual)
+function fechaLocal(fecha) {
+    const anio = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const dia = String(fecha.getDate()).padStart(2, '0');
 
-function renderMonthData(index) {
-    const data = monthlyData[index];
-    
-    // Asignar mes
-    document.getElementById("current-month").innerText = data.month;
-    const monthName = data.month.split(" ")[0];
-    document.getElementById("winner-month").innerText = monthName;
-    
-    // Lógica para progreso idéntica a index.js
-    const total = data.sam + data.alex;
-    let samPercent = 50;
-    let alexPercent = 50;
-    
-    if (total > 0) {
-        samPercent = ((data.sam / total) * 100).toFixed(1);
-        alexPercent = ((data.alex / total) * 100).toFixed(1);
-    }
-    
-    // Calcular ganador y la diferencia (badge)
-    const winnerName = data.sam >= data.alex ? "Sam" : "Alex";
-    const diff = Math.abs(data.sam - data.alex);
-    
-    document.getElementById("winner-text").innerText = `${winnerName} lidera el trono`;
-    document.getElementById("winner-diff").innerText = `+${diff}`;
-    
-    // Textos de las cards
-    document.getElementById("score-sam").innerText = data.sam;
-    document.getElementById("score-alex").innerText = data.alex;
-    
-    // Aplicar ancho de las barras de progreso
-    document.getElementById("bar-sam").style.width = samPercent + '%';
-    document.getElementById("bar-alex").style.width = alexPercent + '%';
-    
-    // Totales inferiores de la card principal
-    document.getElementById("total-visits").innerText = `${total} visitas`;
-    document.getElementById("percentage-text").innerText = `${samPercent}% vs ${alexPercent}%`;
-    
-    // Tarjeta del Récord
-    document.getElementById("record-text").innerText = `${data.recordName} con ${data.recordVisits} visitas`;
+    return `${anio}-${mes}-${dia}`;
 }
 
-// Función que se llama al tocar las flechas
+async function cargarEstadisticas() {
+    try {
+        const { data: listaUsuarios, error: errorUsuarios } =
+            await _supabase
+                .from('user')
+                .select('username')
+                .order('id', { ascending: true });
+
+        if (errorUsuarios) throw errorUsuarios;
+
+        const { data: listaVisitas, error: errorVisitas } =
+            await _supabase
+                .from('visits')
+                .select('username, created_at')
+                .order('created_at', { ascending: true });
+
+        if (errorVisitas) throw errorVisitas;
+
+        usuarios = listaUsuarios || [];
+        visitas = listaVisitas || [];
+
+        renderMonthData();
+
+    } catch (error) {
+        console.error('Error cargando estadísticas:', error);
+        document.getElementById('current-month').textContent =
+            'Error al cargar';
+    }
+}
+
+function renderMonthData() {
+    const inicio = new Date(
+        fechaSeleccionada.getFullYear(),
+        fechaSeleccionada.getMonth(),
+        1
+    );
+
+    const fin = new Date(
+        fechaSeleccionada.getFullYear(),
+        fechaSeleccionada.getMonth() + 1,
+        1
+    );
+
+    const visitasMes = visitas.filter(visita => {
+        const fecha = new Date(visita.created_at);
+        return fecha >= inicio && fecha < fin;
+    });
+
+    const nombres = usuarios.map(u => u.username);
+
+    // Conteo mensual por usuario
+    const conteos = {};
+    nombres.forEach(nombre => conteos[nombre] = 0);
+
+    visitasMes.forEach(visita => {
+        conteos[visita.username] =
+            (conteos[visita.username] || 0) + 1;
+    });
+
+    const usuario1 = nombres[0] || 'Usuario 1';
+    const usuario2 = nombres[1] || 'Usuario 2';
+
+    const total1 = conteos[usuario1] || 0;
+    const total2 = conteos[usuario2] || 0;
+    const total = total1 + total2;
+
+    const porcentaje1 = total ? total1 / total * 100 : 50;
+    const porcentaje2 = total ? total2 / total * 100 : 50;
+
+    // Encabezado del mes
+    document.getElementById('current-month').textContent =
+        nombreMes(fechaSeleccionada);
+
+    document.getElementById('winner-month').textContent =
+        monthNames[fechaSeleccionada.getMonth()];
+
+    // Nombres de los usuarios
+    document.getElementById('label-sam').textContent = usuario1;
+    document.getElementById('label-alex').textContent = usuario2;
+
+    // Puntuaciones
+    document.getElementById('score-sam').textContent = total1;
+    document.getElementById('score-alex').textContent = total2;
+
+    // Barras de progreso
+    document.getElementById('bar-sam').style.width =
+        `${porcentaje1}%`;
+
+    document.getElementById('bar-alex').style.width =
+        `${porcentaje2}%`;
+
+    // Total y porcentajes
+    document.getElementById('total-visits').textContent =
+        `${total} visitas`;
+
+    document.getElementById('percentage-text').textContent =
+        `${porcentaje1.toFixed(1)}% vs ${porcentaje2.toFixed(1)}%`;
+
+    // Ganador
+    const diferencia = Math.abs(total1 - total2);
+    let textoGanador;
+
+    if (total1 === total2) {
+        textoGanador = '¡Empate!';
+    } else {
+        const ganador = total1 > total2 ? usuario1 : usuario2;
+        textoGanador = `${ganador} lidera el trono`;
+    }
+
+    document.getElementById('winner-text').textContent =
+        textoGanador;
+
+    document.getElementById('winner-diff').textContent =
+        total1 === total2 ? '0' : `+${diferencia}`;
+
+    // Récord: mayor número de visitas en un mismo día
+    const conteoDiario = {};
+
+    visitasMes.forEach(visita => {
+        const dia = fechaLocal(new Date(visita.created_at));
+        const clave = `${dia}|${visita.username}`;
+
+        conteoDiario[clave] = (conteoDiario[clave] || 0) + 1;
+    });
+
+    let recordNombre = 'Sin registros';
+    let recordVisitas = 0;
+    let recordDia = '';
+
+    Object.entries(conteoDiario).forEach(([clave, cantidad]) => {
+        if (cantidad > recordVisitas) {
+            const [dia, nombre] = clave.split('|');
+            recordVisitas = cantidad;
+            recordNombre = nombre;
+            recordDia = dia;
+        }
+    });
+
+    document.getElementById('record-text').textContent =
+        recordVisitas > 0
+            ? `${recordNombre}: ${recordVisitas} visitas (${recordDia})`
+            : 'Sin visitas registradas este mes';
+}
+
 function changeMonth(direction) {
-    currentIndex += direction;
-    
-    // Evitar que se salga de los límites de los datos mockeados
-    if (currentIndex < 0) {
-        currentIndex = 0;
-    }
-    if (currentIndex >= monthlyData.length) {
-        currentIndex = monthlyData.length - 1;
-    }
-    
-    renderMonthData(currentIndex);
+    fechaSeleccionada = new Date(
+        fechaSeleccionada.getFullYear(),
+        fechaSeleccionada.getMonth() + direction,
+        1
+    );
+
+    renderMonthData();
 }
 
-// Inicializar al cargar el DOM
-document.addEventListener("DOMContentLoaded", () => {
-    renderMonthData(currentIndex);
-});
+document.addEventListener('DOMContentLoaded', cargarEstadisticas);

@@ -1,6 +1,6 @@
 // Inicializa Supabase con tus credenciales
-const SUPABASE_URL = 'TUS_CREDENCIALES_URL';
-const SUPABASE_ANON_KEY = 'TUS_CREDENCIALES_ANON_KEY';
+const SUPABASE_URL = 'https://vijvrwsphwyczmmwrgvh.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_WmYcNvPImWwB755-wdkJow_nfU0Q2P4';
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const form = document.getElementById('login-form');
@@ -28,31 +28,31 @@ form.addEventListener('submit', async function(event) {
     usernameInput.classList.remove('is-invalid');
 
     try {
-        // Consultamos o insertamos el usuario en la base de datos de Supabase
+        // 1. Consultamos correctamente si el usuario ya existe por su nombre
         const { data, error } = await _supabase
-            .from('usuarios')
+            .from('user')
             .select('*')
-            .eq('nombre', valor);
+            .eq('username', valor);
 
         if (error) throw error;
 
-        // Si el usuario no existe en la base de datos, lo podemos registrar automáticamente
+        // 2. Si el usuario no está registrado en la base de datos, lo creamos con visit: 0
         if (data.length === 0) {
-            await _supabase
-                .from('usuarios')
-                .insert([{ nombre: valor, visitas: 0 }]);
+            const { error: insertError } = await _supabase
+                .from('user')
+                .insert([{ username: valor, visit: 0 }]);
+
+            if (insertError) throw insertError;
         }
 
-        // Guardamos el usuario actual en la sesión activa de la pestaña actual (opcional) 
-        // o pasamos directo al index.html llevando el nombre por URL o variable de sesión segura
-        sessionStorage.setItem('usuarioActivo', valor);
-
-        // ¡Redirección a la app principal!
+        // 3. Guardamos sesión y redirigimos
+        localStorage.setItem('usuarioActivo', valor);
         window.location.href = 'index.html';
+
 
     } catch (err) {
         console.error("Error al conectar con Supabase:", err);
-        mostrarError("Hubo un error de conexión con la base de datos.");
+        mostrarError("Hubo un error al conectar con la base de datos.");
     }
 });
 

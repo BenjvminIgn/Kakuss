@@ -17,6 +17,7 @@
     <header class="main-header py-3">
         <div class="container d-flex justify-content-between align-items-center">
             <h1 class="text-dark fs-1 fw-bold mb-0">Inicio</h1>
+            <h1 class="name fs-4 text-secondary mb-0" id="username"></h1>
         </div>
     </header>
 
@@ -33,7 +34,7 @@
                 <!-- Card Usuario 1 -->
                 <div id="card-1" class="col-6">
                     <div class="card responsive-card">
-                        <h1 class="card-title text-center">Usuario</h1>
+                        <h1 id="nombre-user1" class="card-title text-center">Usuario</h1>
                         <div class="card-body">
                             <h1 id="contador-user1" class="count-title text-center">0</h1>
                             <p class="card-text">visitas hoy</p>
@@ -44,7 +45,7 @@
                 <!-- Card Usuario 2 -->
                 <div id="card-2" class="col-6">
                     <div class="card responsive-card">
-                        <h1 class="card-title text-center">Usuario 2</h1>
+                        <h1 id="nombre-user2" class="card-title text-center">Usuario</h1>
                         <div class="card-body">
                             <h1 id="contador-user2" class="count-title text-center">0</h1>
                             <p class="card-text">visitas hoy</p>
@@ -73,8 +74,8 @@
 
                 <!-- Leyenda inferior -->
                 <div class="d-flex justify-content-between align-items-center mt-2 small text-muted">
-                    <span><span class="dot" style="color: #ec3636;">●</span> user 1</span>
-                    <span>user 2 <span class="dot" style="color: #179ace;">●</span></span>
+                    <span id="leyenda-user1"><span class="dot" style="color: #ec3636;">●</span> user 1</span>
+                    <span id="leyenda-user2">user 2 <style></style> <span class="dot" style="color: #179ace;">●</span></span>
                 </div>
             </div>
         </section>
@@ -104,7 +105,7 @@
             <span class="nav-label">Ajuste</span>
         </a>
     </nav>
-
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/index.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx6Hk+gWpGz5sE5Z1mUpmsaSmqM6pmsV3y4pGekfvXvWz8i1c+z" crossorigin="anonymous"></script>
 </body>
